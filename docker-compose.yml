@@ -11,6 +11,14 @@ services:
       - "9001:9001"
     volumes:
       - minio_data:/data
+    networks:
+      - file-service-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   file-service:
     build:
@@ -18,16 +26,19 @@ services:
       dockerfile: Dockerfile
     container_name: go-file-service
     depends_on:
-      - minio
-    environment:
-      SERVER_PORT: 8080
-      MINIO_ENDPOINT: minio:9000
-      MINIO_ACCESS_KEY: minioadmin
-      MINIO_SECRET_KEY: minioadmin
-      MINIO_USE_SSL: "false"
-      MINIO_BUCKET: app-files
+      minio:
+        condition: service_healthy
+    env_file:
+      - .env
     ports:
       - "8080:8080"
+    networks:
+      - file-service-network
+    restart: on-failure
 
 volumes:
   minio_data:
+
+networks:
+  file-service-network:
+    driver: bridge

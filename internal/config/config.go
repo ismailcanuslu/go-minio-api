@@ -11,7 +11,6 @@ type Config struct {
 	MinIOAccessKey string
 	MinIOSecretKey string
 	MinIOUseSSL    bool
-	MinIOBucket    string
 }
 
 func Load() Config {
@@ -21,7 +20,6 @@ func Load() Config {
 		MinIOAccessKey: getEnv("MINIO_ACCESS_KEY", "minioadmin"),
 		MinIOSecretKey: getEnv("MINIO_SECRET_KEY", "minioadmin"),
 		MinIOUseSSL:    strings.EqualFold(getEnv("MINIO_USE_SSL", "false"), "true"),
-		MinIOBucket:    getEnv("MINIO_BUCKET", "app-files"),
 	}
 }
 
